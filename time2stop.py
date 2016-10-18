@@ -1,19 +1,35 @@
-# LET'S STOP POLLUTION TOGETHER
-# run this in python
-######################################
-# how many signs do you want? -1 - infinite
-count = -1
-# choose delay between signs(in seconds) zero for random in [5:60]
-delay = 3
-######################################
-
 import urllib
 import urllib.request as UrlReq
 import urllib.parse
 import random
+import argparse
+import sys
 from string import ascii_letters as chars
 from time import sleep
 from time import time
+
+msg="""Default call (without args):
+    time2stop -d 3 -s -1 : script will send POST messages in 3 sec intervals
+    
+    When using random delay: Maximum delay > minimum delay && delay > 0
+    You can always stop script by Ctrl + C"""
+
+parser = argparse.ArgumentParser(description="Help people in village NOT die from radiation.", formatter_class=argparse.RawDescriptionHelpFormatter, epilog=msg)
+parser.add_argument("-s","--signs", type=int, default=-1, help="how many signs will be sent. -1 for infinity", metavar="N")
+delay_group = parser.add_mutually_exclusive_group()
+delay_group.add_argument("-d","--delay", type=int, default=3, help="delay between sign sending", dest="delay", metavar="sec")
+delay_group.add_argument("-r","--random", type=int, nargs=2, help="random delay in between passed 2 values", metavar="sec")
+
+passed_args = parser.parse_args()
+
+count = passed_args.signs
+delay = passed_args.delay
+if passed_args.random is not None:
+    min_delay, max_delay = passed_args.random
+    if max_delay <= min_delay or max_delay <= 0 or min_delay < 0:
+        print("Error: When using random delay: Maximum delay > minimum delay && delay > 0")
+        sys.exit()
+
 
 lname_female = ["Ильина", "Гусева", "Титова", "Кузьмина", "Кудрявцева", "Баранова", "Куликова", "Алексеева", "Степанова", "Яковалева", "Сорокина", "Сергеева", "Романова", "Захарова", "Борисова", "Королева", "Герасимова", "Пономарева", "Григорьева", "Лазарева", "Медведева", "Ершова", "Никитина", "Соболева", "Рябова", "Полякова", "Цветкова", "Данилова", "Жукова", "Фролова", "Журавлева", "Николаева", "Путина", "Молчанова", "Крылова", "Максимова", "Сидорова", "Осипова", "Белоусова", "Федотова", "Дорофеева", "Егорова", "Панина", "Матвеева", "Боброва", "Дмитриева", "Калинина", "Анисимова", "Петухова", "Пугачева", "Антонова", "Тимофеева", "Никифорова", "Веселова", "Филиппова", "Романова", "Маркова", "Большакова", "Суханова", "Миронова", "Александрова", "Коновалова", "Шестакова", "Казакова", "Ефимова", "Денисова", "Громова", "Фомина", "Андреева", "Давыдова", "Мельникова", "Щербакова", "Блинова", "Колесникова", "Иванова", "Смирнова", "Кузнецова", "Попова", "Соколова", "Лебедева", "Козлова", "Новикова", "Морозова", "Петрова", "Волкова", "Соловаьева", "Васильева", "Зайцева", "Павлова", "Семенова", "Голубева", "Виноградова", "Богданова", "Воробьева", "Федорова", "Михайлова", "Беляева", "Тарасова", "Белова", "Комарова", "Орлова", "Киселева", "Макарова", "Андреева"]
 
@@ -96,6 +112,9 @@ logfile = open("stopping_the_polution.txt", "a", encoding="utf8")
 
 print("STOPPING THE POLLUTION begins now")
 print("Every dot shown another active citizen")
+if count > 0:
+    print("There will be {0} active citizens".format(count))
+
 try:
     while count != 0:
         try:
@@ -142,7 +161,7 @@ try:
             print(e)
         count -= 1
         if delay == 0:
-            sleep(random.randint(5, 60))
+            sleep(random.randint(min_delay, max_delay))
         else:
             sleep(delay)
 except KeyboardInterrupt as err:
