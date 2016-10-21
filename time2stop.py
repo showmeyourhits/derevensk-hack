@@ -74,28 +74,28 @@ city = ["Азов", "Батайск", "Белая Калитва", "Волгод
 
 domain = ["yandex.ru", "mail.ru", "bk.ru", "rambler.ru", "gmail.com"]
 
+user_agent = ["Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Safari/602.1.50",
+        "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0"]
+
 headers = {"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
            "Accept-Encoding": "gzip, deflate",
            "Accept-Language": "en-US,en;q=0.8,ru;q=0.6",
            "Cache-Control": "max-age=0",
            "Connection": "keep-alive",
            "Content-Type": "application/x-www-form-urlencoded",
-           "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36",
            "Host": "www.derevensk.ru",
            "Origin": "http://www.derevensk.ru",
            "Referer": "http://www.derevensk.ru/sborgolosov/izlucheniu_net.php",
            "Upgrade-Insecure-Requests": "1"
            }
-
-second_url = "http://www.derevensk.ru/sborgolosov/ok.php"
-second_headers = {"Host": "www.derevensk.ru",
-          "Connection": "keep-alive",
-          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-          "Upgrade-Insecure-Requests": "1",
-          
-          "Referer": "http://www.derevensk.ru/sborgolosov/izlucheniu_net.php",
-          "Accept-Encoding": "gzip, deflate, sdch",
-          "Accept-Language": "en-US,en;q=0.8,ru;q=0.6"}
 
 # to get random name/city/domain
 random_ = lambda values_list: values_list[random.randint(0, len(values_list) - 1)]
@@ -138,6 +138,9 @@ try:
                 "city": random_(city)
             }
 
+            # genereate random UA from list
+            headers["User-Agent"] = random_(user_agent)
+
             # encoding data to send
             values = urllib.parse.urlencode(data, encoding="cp1251")
             binary_values = values.encode(encoding="cp1251")
@@ -146,11 +149,6 @@ try:
             
             # send the POST
             response = urllib.request.urlopen(req)
-
-            # request to derevensk OK
-            # req = UrlReq.Request(url=second_url, headers=second_headers, method='GET')
-
-            # response = urllib.request.urlopen(req)
 
             if response.code == 200:
                 logfile.write("{lname} {fname} {otch},{ages} из {city} - {email} signed the petition\n".format(**data))
